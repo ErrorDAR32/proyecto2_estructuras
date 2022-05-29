@@ -12,7 +12,7 @@
   */
 
 typedef struct node {
-	int num;             //posicion en la cual fue insertada
+	int num;             //posicion en la cual fue insertada, SE ASIGNA SOLITO
 	char* word;          //palabra
 	linkedList* books;   //lista de libros donde se encuentra la palabra
 	struct node *left;   //sub-izq
@@ -52,10 +52,11 @@ void toString(node* n){
 	}
 }
 
-/*//constructor sobrecargado de nodos
-node* new_node2(char* word){
+//constructor sobrecargado de nodos
+node* new_node2(char* texto){
 	node *n = calloc(1, sizeof(node));
-	n->num = num;
+	n->num = 0;
+	n->word = texto;
 	n->books = newLinkedList();
 	n->parent = NULL;
 	n->right = NULL;
@@ -63,7 +64,7 @@ node* new_node2(char* word){
 
 	return n;
 }
-*/
+
 splay_tree* new_splay_tree() {
 	splay_tree *t = calloc(1, sizeof(splay_tree));
 	t->root = NULL;
