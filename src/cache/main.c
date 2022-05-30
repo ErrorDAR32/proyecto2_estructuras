@@ -6,19 +6,19 @@ int main() {
 	splay_tree *t = new_splay_tree();
 	
 	node *a, *b, *c, *d, *e, *f, *g, *h, *i, *j, *k, *l, *m;
-	a = new_node();
-	b = new_node();
-	c = new_node();
-	d = new_node();
-	e = new_node();
-	f = new_node();
-	g = new_node();
-	h = new_node();
-	i = new_node();
-	j = new_node();
-	k = new_node();
-	l = new_node();
-	m = new_node();
+	a = new_empty_node();
+	b = new_empty_node();
+	c = new_empty_node();
+	d = new_empty_node();
+	e = new_empty_node();
+	f = new_empty_node();
+	g = new_empty_node();
+	h = new_empty_node();
+	i = new_empty_node();
+	j = new_empty_node();
+	k = new_empty_node();
+	l = new_empty_node();
+	m = new_empty_node();
 	inorder(t, t->root);
 	printf("******************\n");
 	

@@ -5,7 +5,7 @@
 #ifndef SPLAY_TREE
 #define SPLAY_TREE
 /**
-  * Árbol Splay-Segunda programada de datos
+  * ï¿½rbol Splay-Segunda programada de datos
   * Autor: Kevin Salazar
   * Estructura definida para poder ser usada
   * con cadenas de caracteres
@@ -25,7 +25,7 @@ typedef struct splay_tree {
 	struct node *root;
 }splay_tree;
 
-node* new_node() {
+node* new_empty_node() {
 	node *n = calloc(1, sizeof(node));
 	n->num = 0;
 	n->word = "";
@@ -53,7 +53,7 @@ void toString(node* n){
 }
 
 //constructor sobrecargado de nodos
-node* new_node2(char* texto){
+node* new_node_text(char* texto){
 	node *n = calloc(1, sizeof(node));
 	n->num = 0;
 	n->word = texto;
