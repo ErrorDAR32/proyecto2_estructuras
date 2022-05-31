@@ -3,16 +3,9 @@
 //doubles in capacity when load factor is reached
 // data is wrapped in "HashMapNode"s, these nodes also contain 
 //information for the workings of the hashmap
-#include "doublell.c"
 
-//Struct de la tabla de hash
-struct HashMap {
-    float loadFactor;
-    struct DLinkedList *Buckets;
-    unsigned long elements;
-    unsigned long capacity;
-};
-
+#include <stdio.h>
+#include <stdlib.h>
 
 //Nodo de la tabla de hash
 struct HashMapNode {
@@ -21,6 +14,13 @@ struct HashMapNode {
     void* value;
 };
 
+//Struct de la tabla de hash
+struct HashMap {
+    float loadFactor;
+    struct HashMapNode *Buckets;
+    unsigned long elements;
+    unsigned long capacity;
+};
 
 //djb2
 //Funcion de hash
@@ -47,14 +47,15 @@ struct HashMap HMnewHashMap(unsigned long cap) {
         cap,
     };
 
-    struct DLinkedList *dll = calloc(hmap.capacity, sizeof(struct DLinkedList));
+    hmap.Buckets = calloc(sizeof(struct HashMapNode), cap);
+
 
     //inicializacion de los nodos de la tabla de hash
     for (int i=0; i<hmap.capacity; i++) {
-        dll[i] = newDLinkedList();
+        hmap.Buckets[i].hash = 0;
+        hmap.Buckets[i].key = NULL;
+        hmap.Buckets[i].value = NULL;
     }
-
-    hmap.Buckets = dll;
 
     return hmap;
 }
@@ -67,28 +68,23 @@ void printHashMap(struct HashMap *hmap) {
     printf(" capacity: %lu, ", hmap->capacity);
     printf(" buckets: {\n");
     for (int i=0; i<hmap->capacity; i++) {
-        struct DLinkedList *l = &hmap->Buckets[i];
-        printf("    %i: DoubleLinkedList at %p { len:%u, start:%p, end:%p, ", i,  l, l->length, l->start, l->end);
-        struct DLLNode* n = l->start;
 
-        int once = 0;
-        while (n != NULL) {
-            once = 1;
-            printf("\n            LinkedListNode at %p {prev: %p, next: %p, hmapNode at %p {,\n", n, n->prev, n->next, n->data);
+        struct HashMapNode *hn = (struct HashMapNode*) &hmap->Buckets[i];
+        printf("\n    hmapNode at %p {,\n", hn);
 
-            struct HashMapNode *hn = (struct HashMapNode*) n->data;
-            printf("                 key: %s ,\n", hn->key);
-            printf("                 value at %p ,\n",hn->value);
-            printf("                 hash: %lu ,\n",hn->hash);
-            printf("            },\n");
-            n = n->next;
-        }
-
-        if(!once) {
-            printf("}\n");
+        if (hn->key != NULL) {
+            printf("        key: %s,\n", hn->key);
         } else {
-            printf("\n    }\n");
+            printf("        key: NULL,\n");
         }
+
+        if (hn->value != NULL) {
+            printf("        value: %p,\n", hn->value);
+        } else {
+            printf("        value: NULL,\n");
+        }
+        printf(  "        hash: %lu ,\n",hn->hash);
+        printf(  "    },\n");
         
     }
     printf("}\n");
@@ -103,18 +99,11 @@ int HMresize(struct HashMap *hmap) {
     struct HashMap newhmap = HMnewHashMap(hmap->capacity*2);
 
     for(int i=0; i<hmap->capacity; i++) {
-        struct DLinkedList *l = &hmap->Buckets[i];
+        struct HashMapNode *n = &hmap->Buckets[i];
 
-        struct DLLNode* n = l->start;
-
-        while (n != NULL) {
-            HMinsertNode(&newhmap, (struct HashMapNode*)n->data);
-            n = n->next;
-        }
-        //deallocates all nodes in list without touching data refs inside;
-        DLLfree(l);
-
+        HMinsertNode(&newhmap, n);
     }
+
     free(hmap->Buckets);
     *hmap = newhmap;
     
@@ -123,29 +112,30 @@ int HMresize(struct HashMap *hmap) {
 
 int HMinsertNode(struct HashMap *hmap, struct HashMapNode *newhn) {
     if ((hmap->elements / hmap->capacity)>=0.75) {
-
         HMresize(hmap);
     }
 
 
-    unsigned long position = newhn->hash % hmap->capacity;
+    unsigned long pos = newhn->hash % hmap->capacity;
 
-    struct DLLNode *n = hmap->Buckets[position].start;
+    struct HashMapNode *hn = &hmap->Buckets[pos];
     
     // in case of collisions
-    while (n != NULL) {
-        struct HashMapNode *hn = (struct HashMapNode*) n->data;
-        
+    unsigned int count = 0;
+    while (count < hmap->capacity) { //avoid infinite wraparound in case of no match
         if (hn->hash == newhn->hash) {
             return -1;
         }
-        n = n->next;
+        if (hn->key == NULL) {
+            *hn = *newhn;
+            hmap->elements++;
+            return 0;
+        }
+
+        pos = pos+1 % hmap->capacity;
+        hn = &hmap->Buckets[pos];
     }
-    hmap->elements++;
-    DLLappendNode(&hmap->Buckets[position], DLLnewNode(newhn));
-    return 0;
-
-
+    return -1;
 } 
 
 int HMinsertKeyValue(struct HashMap *hmap,char *k,void *v) {
@@ -161,51 +151,42 @@ int HMinsertKeyValue(struct HashMap *hmap,char *k,void *v) {
 void* HMgetValue(struct HashMap *hmap, char *k) {
     unsigned long hash = djb2_hash(k);
     unsigned long pos = hash % hmap->capacity;
-    struct DLinkedList *l = &hmap->Buckets[pos];
+    struct HashMapNode *hn = &hmap->Buckets[pos];
 
-    if (l->start == NULL) {
-        return NULL;
-    }
-
-    struct DLLNode *n = l->start;
-    while (n!=NULL)
-    {
-        struct HashMapNode *hmn = (struct HashMapNode*) n->data;
-        if(hmn->hash == hash) {
-            return hmn->value;
+    unsigned int count = 0;
+    while (count < hmap->capacity) { //avoid infinite wraparound in case of no match
+        if (hn->hash == hash) {
+            return hn->value;
         }
-        n = n->next;
+
+        pos = pos+1 % hmap->capacity;
+        hn = &hmap->Buckets[pos];
+        count++;
     }
     return NULL;
-    
 }
 
 //funcion de borrado segun llave
 void* HMremoveValue(struct HashMap *hmap,char *k) {
     unsigned long hash = djb2_hash(k);
     unsigned long pos = hash % hmap->capacity;
-    struct DLinkedList * l = &hmap->Buckets[pos];
+    struct HashMapNode *hn = &hmap->Buckets[pos];
 
-    if (l->start == NULL) {
-        return NULL;
-    }
-
-    struct DLLNode *n = l->start;
-    int i = 0;
-    while (n!=NULL)
-    {
-        struct HashMapNode *hmn = (struct HashMapNode*) n->data;
-        if(hmn->hash == hash) {
-            void* val = hmn->value;
-            free(hmn);
-            free(DLLremoveNode(l,i));
-            return val;
+     unsigned int count = 0;
+    while (count < hmap->capacity) { //avoid infinite wraparound in case of no match
+        if (hn->hash == hash) {
+            hn->hash == 0;
+            hn->key = NULL;
+            void* v = hn->value;
+            hn->value = NULL;
+            return v;
         }
-        i++;
-        n = n->next;
+
+        pos = pos+1 % hmap->capacity;
+        hn = &hmap->Buckets[pos];
+        count++;
     }
     return NULL;
-
 }
 
 
@@ -243,5 +224,10 @@ int testHM() {
     //get, returns null
     printf("%p\n", HMgetValue(&h, "cpp"));
 
+    return 0;
+}
+
+int main() {
+    testHM();
     return 0;
 }
