@@ -92,7 +92,31 @@ void imprimir(struct listaSimple* lista){
 	printf("Terminado exitosamente");
 	printf("\n");
 };
+
+int largo(struct listaSimple* lista){
+	int i = 0;
+	if(lista == NULL){
+		return i;
+	}
+	
+	if(lista->inicio == NULL){
+		return i;
+	}
+	else{
+		struct nodo* tmp = lista->inicio;
+		while(tmp->siguiente != NULL){
+			
+			i++;
+			tmp = tmp->siguiente;
+		};
 		
+		i++;
+		
+		
+	};
+	return i;
+	
+};		
 struct listaSimple* crearLista(){
 	struct listaSimple* lista = calloc(1, sizeof(struct listaSimple));
 	return lista;
@@ -173,118 +197,43 @@ int main(){
 };*/
 
 
-/* Función para devolver un error en caso de que ocurra */
-void error(const char *s);
-/* Función que hace algo con un archivo */
-void procesoArchivo(char *archivo, struct listaSimple* lista);
+
 
 int main()
 {
   struct listaSimple *l1 = crearLista();
-  /* Con un puntero a DIR abriremos el directorio */
-  DIR *dir;
-  /* en ent habrá información sobre el archivo que se está "sacando" a cada momento*/
-  struct dirent *ent;
-
-  /* Empezaremos a leer en el directorio actual */
-  dir = opendir("./arch");
-  //char texto[10000]; 
-  /* Miramos que no haya error */
+  
+  
+  //Con un puntero a DIR abriremos el directorio y Empezaremos a leer en el directorio especificado 
+  DIR *dir = opendir("./arch");
+  //Miramos que no haya error 
   if (dir == NULL)
-    error("No puedo abrir el directorio");
-	
-  /* Una vez nos aseguramos de que no hay error, ¡vamos a jugar! */
-  /* Leyendo uno a uno todos los archivos que hay */
-  while ((ent = readdir (dir)) != NULL)
-    {
-      if ( (strcmp(ent->d_name, ".")!=0) && (strcmp(ent->d_name, "..")!=0) )
-    {
-		printf("%s \n",ent->d_name);
-		
-		//FILE *fich;
-	
-		//fich=fopen(ent->d_name, "r");
-		//if(fich){
-			char texto[10000]; 
-			//char texto2[20000]; 
-			
-			char *str2 = ent->d_name;
-			//memcpy(str2, ent->d_name, sizeof(texto));
-			//printf("%s \n",str2);
-			//while (fgets(texto, 1000, fich))
-			//{
-				
-				//strcat(strcpy(texto2, texto2), texto);
-				
-				
-			//}
-			//char *str = malloc(sizeof(texto));
-			//memcpy(str, texto2, sizeof(texto));
-			//fclose(fich);
-			char *string = ReadFile(str2);
-			//printf("%s \n",str2);
-			insertarFinal(l1, str2, string);
-			//printf("\n hhhhhhhhhhhhhh \n");
-			
-			//printf("%s \n",str2);
-			
-			//procesoArchivo(ent->d_name, l1);
-		//}
-		//else{printf("No entro \n");}
-	}
+    return -1;
+  //en ent habrá información sobre el archivo que se está "sacando" a cada momento
+  struct dirent *ent;
+  //Leyendo uno a uno todos los archivos que hay 
+  while ((ent = readdir(dir)) != NULL) {
+    if ((strcmp(ent->d_name, ".") == 0) || (strcmp(ent->d_name, "..") == 0)) {
+      continue;
     }
-   imprimir(l1);
+
+    //printf("%s \n", ent->d_name);
+    char full_filename[1024] = "./arch/";
+    strcat(full_filename, ent->d_name);
+    char *string = ReadFile(full_filename);
+    
+    //printf("%s \n..............................................\n", string);
+    
+    insertarFinal(l1, ent->d_name, string);
+  }
+
+ 
+   printf(" \n=================================================================================================================================\n");
+   //imprimir(l1);
+   printf("%d \n", largo(l1));
   closedir (dir);
 
   return EXIT_SUCCESS;
 }
 
-void error(const char *s)
-{
-  /* perror() devuelve la cadena S y el error (en cadena de caracteres) que tenga errno */
-  perror (s);
-  exit(EXIT_FAILURE);
-}
 
-void procesoArchivo(char *archivo, struct listaSimple* lista)
-{
-	  /* Para "procesar", o al menos, hacer algo con el archivo, vamos a decir su tamaño en bytes* /
-	  / para ello haremos lo que vemos aquí: https://poesiabinaria.net/2010/04/tamano-de-un-fichero-en-c/ */
-	FILE *fich;
-	long ftam;
-	
-	//fich=fopen(archivo, "r");
-	char texto[100000]  = " ";; 
-	char texto2[200000]  = " ";; 
-	//if (fich)
-		//{
-		//fseek(fich, 0L, SEEK_END);
-		//ftam=ftell(fich);
-		
-		char *string = ReadFile(archivo);
-		
-		char *str2 = malloc(sizeof(texto));
-		memcpy(str2, archivo, sizeof(texto));
-		 //while (fgets(texto, 100000, fich))
-		//{
-			
-			//strcat(strcpy(texto2, texto2), texto);
-			
-			
-		//}
-		
-		
-		//char *str = malloc(sizeof(texto));
-		//memcpy(str, texto2, sizeof(texto));
-		
-		
-		
-		insertarFinal(lista, str2, string);
-		
-		//}
-	//else
-    /* Si ha pasado algo, sólo decimos el nombre */
-    //printf ("%30s (No info.)\n", archivo);
-    
-    fclose(fich);
-}
