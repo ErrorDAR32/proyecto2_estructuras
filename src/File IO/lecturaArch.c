@@ -3,19 +3,15 @@
 #include <string.h>
 #include <math.h>
 #include <stdbool.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <errno.h>
 
 #define MAX_NAME_SZ 256
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <dirent.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <errno.h>
 
 struct nodo{
 	char *nombre;
@@ -131,70 +127,38 @@ char* ReadFile(char *filename)
 
    if (handler)
    {
-       // Seek the last byte of the file
+       // busca el ultumo byte del documento
        fseek(handler, 0, SEEK_END);
-       // Offset from the first to the last byte, or in other words, filesize
+       // va del primer al ultimo byte, o sea sizeof
        string_size = ftell(handler);
-       // go back to the start of the file
+       // vuelve al inicio del documento
        rewind(handler);
 
-       // Allocate a string that can hold it all
+       // crea un string que pueda almacenar todo
        buffer = (char*) malloc(sizeof(char) * (string_size + 1) );
 
-       // Read it all in one operation
+       // lee todo en una sola operacion
        read_size = fread(buffer, sizeof(char), string_size, handler);
 
-       // fread doesn't set it so put a \0 in the last position
-       // and buffer is now officially a string
+       // agrega un \0 a la ultima posicion
+       // con eso el buffer es ahora un string
        buffer[string_size] = '\0';
 
        if (string_size != read_size)
        {
-           // Something went wrong, throw away the memory and set
-           // the buffer to NULL
+           // si ocurre un error vuelve el buffer a null
            free(buffer);
            buffer = NULL;
        }
 
-       // Always remember to close the file.
+       // cierra el documento
        fclose(handler);
     }
 
     return buffer;
 }
 
-/*
 
-
-int main(){
-	
-	
-    
-    struct listaSimple *l1 = crearLista();
-    
-    FILE *archivo = fopen("archivo.txt", "r"); // Modo lectura
-	   
-	      // Aquí vamos a ir almacenando cada línea
-	int i = 1;
-	char texto[1000]; 
-    while (fgets(texto, 1000, archivo))
-    {
-        // Aquí, justo ahora, tenemos ya la línea. Le vamos a remover el salto
-        strtok(texto, "\n");
-       
-      
-        char *str = malloc(sizeof(texto));
-        memcpy(str, texto, sizeof(texto));
-        insertarFinal(l1, str);
-        
-        i++;
-    }
-    
-    
-    imprimir(l1);
-	return 0;
-	
-};*/
 
 
 
@@ -228,9 +192,9 @@ int main()
   }
 
  
-   printf(" \n=================================================================================================================================\n");
+   //printf(" \n=================================================================================================================================\n");
    //imprimir(l1);
-   printf("%d \n", largo(l1));
+   //printf("%d \n", largo(l1));
   closedir (dir);
 
   return EXIT_SUCCESS;
