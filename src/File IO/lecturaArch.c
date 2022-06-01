@@ -127,31 +127,19 @@ char* ReadFile(char *filename)
 
    if (handler)
    {
-       // busca el ultumo byte del documento
-       fseek(handler, 0, SEEK_END);
-       // va del primer al ultimo byte, o sea sizeof
-       string_size = ftell(handler);
-       // vuelve al inicio del documento
-       rewind(handler);
-
-       // crea un string que pueda almacenar todo
+       
+       fseek(handler, 0, SEEK_END);     
+       string_size = ftell(handler);       
+       rewind(handler);       
        buffer = (char*) malloc(sizeof(char) * (string_size + 1) );
-
-       // lee todo en una sola operacion
        read_size = fread(buffer, sizeof(char), string_size, handler);
-
-       // agrega un \0 a la ultima posicion
-       // con eso el buffer es ahora un string
        buffer[string_size] = '\0';
 
        if (string_size != read_size)
        {
-           // si ocurre un error vuelve el buffer a null
            free(buffer);
            buffer = NULL;
        }
-
-       // cierra el documento
        fclose(handler);
     }
 
@@ -159,8 +147,33 @@ char* ReadFile(char *filename)
 }
 
 
+int lector(char * ruta, struct listaSimple* l1){
+	
+	DIR *dir = opendir(ruta);
+	if (dir == NULL){
+		return -1;
+	}
+	struct dirent *ent;
+	while ((ent = readdir(dir)) != NULL) {
+		if ((strcmp(ent->d_name, ".") == 0) || (strcmp(ent->d_name, "..") == 0)) {
+		  continue;
+		}
 
+		//printf("%s \n", ent->d_name);
+		char full_filename[1024] = "./arch/";
+		strcat(full_filename, ent->d_name);
+		char *string = ReadFile(full_filename);
+		
+		//printf("%s \n..............................................\n", string);
+		
+		insertarFinal(l1, ent->d_name, string);
+  }
 
+	return 0;
+	
+	
+	
+}
 
 
 int main()
@@ -168,34 +181,11 @@ int main()
   struct listaSimple *l1 = crearLista();
   
   
-  //Con un puntero a DIR abriremos el directorio y Empezaremos a leer en el directorio especificado 
-  DIR *dir = opendir("./arch");
-  //Miramos que no haya error 
-  if (dir == NULL)
-    return -1;
-  //en ent habrá información sobre el archivo que se está "sacando" a cada momento
-  struct dirent *ent;
-  //Leyendo uno a uno todos los archivos que hay 
-  while ((ent = readdir(dir)) != NULL) {
-    if ((strcmp(ent->d_name, ".") == 0) || (strcmp(ent->d_name, "..") == 0)) {
-      continue;
-    }
-
-    //printf("%s \n", ent->d_name);
-    char full_filename[1024] = "./arch/";
-    strcat(full_filename, ent->d_name);
-    char *string = ReadFile(full_filename);
-    
-    //printf("%s \n..............................................\n", string);
-    
-    insertarFinal(l1, ent->d_name, string);
-  }
-
- 
+   lector("./arch", l1);
    //printf(" \n=================================================================================================================================\n");
    //imprimir(l1);
-   //printf("%d \n", largo(l1));
-  closedir (dir);
+   printf("%d \n", largo(l1));
+  
 
   return EXIT_SUCCESS;
 }
