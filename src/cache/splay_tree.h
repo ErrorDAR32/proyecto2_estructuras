@@ -1,18 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "linked_list.h"
 
 #ifndef SPLAY_TREE
 #define SPLAY_TREE
 /**
-  * �rbol Splay-Segunda programada de datos
+  * arbol Splay-Segunda programada de datos
   * Autor: Kevin Salazar
   * Estructura definida para poder ser usada
   * con cadenas de caracteres
   */
 
 typedef struct node {
-	int num;             //posicion en la cual fue insertada, SE ASIGNA SOLITO
 	char* word;          //palabra
 	linkedList* books;   //lista de libros donde se encuentra la palabra
 	struct node *left;   //sub-izq
@@ -25,9 +25,8 @@ typedef struct splay_tree {
 	struct node *root;
 }splay_tree;
 
-node* new_empty_node() {
+/*node* new_node() {
 	node *n = calloc(1, sizeof(node));
-	n->num = 0;
 	n->word = "";
 	n->books = newLinkedList();
 	n->parent = NULL;
@@ -37,12 +36,22 @@ node* new_empty_node() {
 	return n;
 }
 
+//retorna el valor ascii de un char
+int valorSTR(char* String){
+	int i, res;
+	int ;
+	for(i=0; i<strlen(String); i++){
+		res+=String[i];
+	}
+	return res;
+}*/
+
 //funcion tipo toString de java, pero aplicado a los nodos del arbol splay
 void toString(node* n){
 	printf("***************************\n");
-	printf("[%d] Palabra: %s \n", n->num, n->word);
+	printf("Palabra: %s \n", n->word);
 	printf("Lista de coincidencias: \n");
-        linkedList* L = n->books;
+    linkedList* L = n->books;
 	nodo* actual = L->inicio;
 	int i=1;
 	while(actual!=NULL){
@@ -52,10 +61,9 @@ void toString(node* n){
 	}
 }
 
-//constructor sobrecargado de nodos
-node* new_node_text(char* texto){
+//constructor de nodos
+node* new_node(char* texto){
 	node *n = calloc(1, sizeof(node));
-	n->num = 0;
 	n->word = texto;
 	n->books = newLinkedList();
 	n->parent = NULL;
@@ -71,6 +79,9 @@ splay_tree* new_splay_tree() {
 
 	return t;
 }
+
+//Se llama a esta funcion para imprimir el splay tree
+
 //Retorna el nodo más grande
 node* maximum(splay_tree *t, node *x) {
 	while(x->right != NULL)
@@ -153,17 +164,14 @@ void splay(splay_tree *t, node *n) {
 	}
 }
 
-void insert(splay_tree *t, node *n) {
-	int x = t->pos;
-	x++;
-	t->pos = x;
-	n->num=x;
-
+//Function of insert node in splay tree
+void insert(splay_tree *t, char *content) {
+	node *n = new_node(content);
 	node *y = NULL;
 	node *temp = t->root;
 	while(temp != NULL) {
 	  y = temp;
-	  if(n->num < temp->num)
+	  if(strcmp(n->word, temp->word) < 0) //strcmp returns value with difference of chars through the words (ASCII value); it will be negative
 	    temp = temp->left;
 	  else
 	    temp = temp->right;
@@ -172,7 +180,7 @@ void insert(splay_tree *t, node *n) {
 
 	if(y == NULL) //newly added node is root
 	  t->root = n;
-	else if(n->num < y->num)
+	else if(strcmp(content, y->word) < 0)
 	  y->left = n;
 	else
 	  y->right = n;
@@ -180,19 +188,20 @@ void insert(splay_tree *t, node *n) {
 	splay(t, n);
 }
 
-node* search(splay_tree *t, node *n, int x) {
-	if(x == n->num) {
+node* search_aux(splay_tree *t, node *n, char* x) {
+	if( strcmp(x, n->word) == 0 ) { //comparation of strings with func of "string.h"; 0 is when is not difference between them
 	  splay(t, n);
 	  return n;
 	}
-	else if(x < n->num)
-	  return search(t, n->left, x);
-	else if(x > n->num)
-	  return search(t, n->right, x);
+	else if(strcmp(x, n->word) < 0)
+	  return search_aux(t, n->left, x);
+	else if(strcmp(x, n->word) > 0)
+	  return search_aux(t, n->right, x);
 	else
 	  return NULL;
 }
 
+//it deletes a node from the splay tree
 void delete(splay_tree *t, node *n) {
 	splay(t, n);
 
@@ -226,5 +235,20 @@ void inorder(splay_tree *t, node *n) {
 	  toString(n);
 	  inorder(t, n->right);
 	}
+}
+
+void imprimir(splay_tree* t){
+	inorder(t, t->root);
+}
+
+node *search(splay_tree *t, char* texto){
+	printf("voy aqui");
+	return search_aux(t, t->root, texto);
+}
+
+void eliminar(splay_tree *t, char* txt){
+	node *n=new_node(txt); 
+	delete(t, n);
+
 }
 #endif

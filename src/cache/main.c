@@ -1,48 +1,47 @@
 #include "splay_tree.h"
+#include "cache_io.h"
 #include<stdlib.h>
 #include<stdio.h>
 
 int main() {
 	splay_tree *t = new_splay_tree();
 	
-	node *a, *b, *c, *d, *e, *f, *g, *h, *i, *j, *k, *l, *m;
-	a = new_empty_node();
-	b = new_empty_node();
-	c = new_empty_node();
-	d = new_empty_node();
-	e = new_empty_node();
-	f = new_empty_node();
-	g = new_empty_node();
-	h = new_empty_node();
-	i = new_empty_node();
-	j = new_empty_node();
-	k = new_empty_node();
-	l = new_empty_node();
-	m = new_empty_node();
-	inorder(t, t->root);
 	printf("******************\n");
 	
-	insert(t, a);
-	insertar(a->books, "don quijote");
-	insert(t, b);
-	insert(t, c);
-	insert(t, d);
-	insert(t, e);
-	insert(t, f);
-	insert(t, g);
-	insert(t, h);
-	insert(t, i);
-	insert(t, j);
-	insert(t, k);
-	insert(t, l);
-	insert(t, m);
-	inorder(t, t->root);
-	printf("[%d]", t->root->num);
-	printf("\n");
-	delete(t, a);
-	delete(t, m);
+	insert(t, "hola");
 	
-	inorder(t, t->root);
+	insert(t, "arroz");
+	insert(t, "hole");
+	insert(t, "holi");
+	insert(t, "cabello");
+	insert(t, "piramide");
+	insert(t, "esternocleidomastoideo");
+	insert(t, "adrenalina");
+	insert(t, "carne");
+	insert(t, "perone");
+	insert(t, "programacion");
+	insert(t, "xochimilco");
+	insert(t, "zorro");
+
+	node *x=search(t, "arroz");	
+	node *y=search(t, "hole");
+	insertar(x->books, "don quijote");
+	insertar(y->books, "mein kampf");
+	insertar(x->books, "metamorfosis");
+
+	imprimir(t);
+    
+	splay(t,search(t,"esternocleidomastoideo"));
+	printf("xxxxxxxxxxxxxxxxxx\n");
+	printf("[%s]", t->root->word);
+	printf("xxxxxxxxxxxxxxxxxx\n");
+	printf("\n");
+	eliminar(t, "arroz");
+	eliminar(t, "zorro");
+	
+	imprimir(t);
+	printf("\nguardando...\n");
+	save_aux(t, t->root, "fichero.txt");
 	/*node* act = search(t, i, 70);
 	printf("[%d]", t->root->data);
 	inorder(t, t->root);*/
