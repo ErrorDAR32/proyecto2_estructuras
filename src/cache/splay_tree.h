@@ -247,7 +247,7 @@ node *search(splay_tree *t, char* texto){
 }
 
 void eliminar(splay_tree *t, char* txt){
-	node *n=new_node(txt); 
+	node *n=search(t, txt); 
 	delete(t, n);
 
 }

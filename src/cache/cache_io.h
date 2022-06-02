@@ -10,7 +10,7 @@
 //funciones de apoyo, se quedan un rato aqui xd
 /*
 pienso usar una linked list para guardar cada que el string se tope con 
-una de estas (|) o estas (°)
+una de estas (|) o estas (ï¿½)
 */
 //************************************************
 //struct de lista simple, con solo funcion de insercion para hacer entrada y salida de cache
@@ -69,7 +69,7 @@ void save_aux2(node* n, char* f){
 	FILE *archivo;
  	archivo = fopen(f,"r+");
 	fprintf(archivo, "***************************\n");
-	fprintf(archivo, "[%d] Palabra: %s \n", n->num, n->word);
+	fprintf(archivo, "Palabra: %s \n", n->word);
 	fprintf(archivo, "Lista de coincidencias: \n");
     linkedList* L = n->books;
 	nodo* actual = L->inicio;
