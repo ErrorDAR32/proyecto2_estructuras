@@ -7,116 +7,9 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include "../hashmap/hashmap.c" 
 
 #define MAX_NAME_SZ 256
-
-
-
-
-struct nodo{
-	char *nombre;
-	char *texto;
-	
-	struct nodo* siguiente;
-	
-	
-	
-};
-
-struct listaSimple{
-	
-	struct nodo* inicio;
-	
-	
-};
-
-struct nodo* crearNodo(){
-	struct nodo* nn = calloc(1,sizeof(struct nodo));
-	return nn;
-}
-
-
-int insertarFinal(struct listaSimple* lista, char * nombre, char *texto){
-		if(lista == NULL){
-			return -1;
-		}
-		if(lista->inicio == NULL){
-			struct nodo* nuevo = calloc(1, sizeof(struct nodo));
-			nuevo->nombre = nombre;
-			nuevo->texto = texto;
-			lista->inicio = nuevo;
-			return 0;
-		}
-		else{
-			struct nodo* tmp = lista->inicio;
-			while(tmp->siguiente != NULL){
-				tmp = tmp->siguiente;
-			}
-			tmp->siguiente = crearNodo();
-			tmp->siguiente->nombre = nombre;
-			tmp->siguiente->texto = texto;
-			
-		};
-		return 0;
-};
-
-void imprimir(struct listaSimple* lista){
-	if(lista == NULL){
-		printf("No existen la lista \n");
-	}
-	
-	if(lista->inicio == NULL){
-		printf("No existen elementos \n");
-	}
-	else{
-		struct nodo* tmp = lista->inicio;
-		while(tmp->siguiente != NULL){
-			
-			printf("%s",tmp->nombre);
-			printf("\n");
-			printf("%s",tmp->texto);
-			printf("\n");
-			tmp = tmp->siguiente;
-		};
-		
-		printf("%s",tmp->nombre);
-		printf("\n");
-		printf("%s",tmp->texto);
-		printf("\n");
-		
-	};
-	printf("Terminado exitosamente");
-	printf("\n");
-};
-
-int largo(struct listaSimple* lista){
-	int i = 0;
-	if(lista == NULL){
-		return i;
-	}
-	
-	if(lista->inicio == NULL){
-		return i;
-	}
-	else{
-		struct nodo* tmp = lista->inicio;
-		while(tmp->siguiente != NULL){
-			
-			i++;
-			tmp = tmp->siguiente;
-		};
-		
-		i++;
-		
-		
-	};
-	return i;
-	
-};		
-struct listaSimple* crearLista(){
-	struct listaSimple* lista = calloc(1, sizeof(struct listaSimple));
-	return lista;
-	}
 
 
 char* ReadFile(char *filename)
@@ -147,7 +40,7 @@ char* ReadFile(char *filename)
 }
 
 
-int lector(char * ruta, struct listaSimple* l1){
+int lector(char * ruta, struct HashMap h){
 	
 	DIR *dir = opendir(ruta);
 	if (dir == NULL){
@@ -165,8 +58,8 @@ int lector(char * ruta, struct listaSimple* l1){
 		char *string = ReadFile(full_filename);
 		
 		//printf("%s \n..............................................\n", string);
+		HMinsertKeyValue(&h, ent->d_name, string);
 		
-		insertarFinal(l1, ent->d_name, string);
   }
 
 	return 0;
@@ -178,15 +71,15 @@ int lector(char * ruta, struct listaSimple* l1){
 
 int main()
 {
-  struct listaSimple *l1 = crearLista();
   
+	struct HashMap h = HMnewHashMap(1);
+	lector("./arch", h);
+   
   
-   lector("./arch", l1);
-   //printf(" \n=================================================================================================================================\n");
-   //imprimir(l1);
-   printf("%d \n", largo(l1));
-  
+    
+    printHashMap(&h);
 
+   
   return EXIT_SUCCESS;
 }
 
