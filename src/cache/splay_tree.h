@@ -25,26 +25,6 @@ typedef struct splay_tree {
 	struct node *root;
 }splay_tree;
 
-/*node* new_node() {
-	node *n = calloc(1, sizeof(node));
-	n->word = "";
-	n->books = newLinkedList();
-	n->parent = NULL;
-	n->right = NULL;
-	n->left = NULL;
-
-	return n;
-}
-
-//retorna el valor ascii de un char
-int valorSTR(char* String){
-	int i, res;
-	int ;
-	for(i=0; i<strlen(String); i++){
-		res+=String[i];
-	}
-	return res;
-}*/
 
 //funcion tipo toString de java, pero aplicado a los nodos del arbol splay
 void toString(node* n){
@@ -131,6 +111,8 @@ void right_rotate(splay_tree *t, node *x) {
 
 //Funcion de "chaflaneo"
 void splay(splay_tree *t, node *n) {
+	if(n==NULL)
+		return;
 	while(n->parent != NULL) { //node is not root
 	  if(n->parent == t->root) { //node is child of root, one rotation
 	    if(n == n->parent->left) {
@@ -189,22 +171,28 @@ void insert(splay_tree *t, char *content) {
 }
 
 node* search_aux(splay_tree *t, node *n, char* x) {
+	if(n==NULL){
+		printf("\nNo se encontro el nodo [%s]\n", x);
+	    return NULL;
+	}
 	if( strcmp(x, n->word) == 0 ) { //comparation of strings with func of "string.h"; 0 is when is not difference between them
 	  splay(t, n);
 	  return n;
 	}
-	else if(strcmp(x, n->word) < 0)
+	if(strcmp(x, n->word) < 0){
 	  return search_aux(t, n->left, x);
-	else if(strcmp(x, n->word) > 0)
+	}
+	if(strcmp(x, n->word) > 0){
 	  return search_aux(t, n->right, x);
-	else
-	  return NULL;
+	}
+	else{
+		return NULL;
+	}
 }
 
 //it deletes a node from the splay tree
 void delete(splay_tree *t, node *n) {
-	splay(t, n);
-
+	//The splay is made during the verification of n!=null
 	splay_tree *left_subtree = new_splay_tree();
 	left_subtree->root = t->root->left;
 	if(left_subtree->root != NULL)
@@ -242,13 +230,18 @@ void imprimir(splay_tree* t){
 }
 
 node *search(splay_tree *t, char* texto){
-	printf("voy aqui");
 	return search_aux(t, t->root, texto);
 }
 
 void eliminar(splay_tree *t, char* txt){
 	node *n=search(t, txt); 
-	delete(t, n);
+	if(n != NULL){
+		delete(t, n);
+		return;
+	}else{
+		printf("No se puede borrar");
+	}
+	
 
 }
 #endif
