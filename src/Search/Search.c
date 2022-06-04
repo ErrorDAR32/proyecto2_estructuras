@@ -1,4 +1,4 @@
-#include "./hashmap/hashmap.c"
+#include "../hashmap/hashmap.c"
 
 char** search(struct HashMap h, char* substring){
     if(strlen(substring) == 0){
