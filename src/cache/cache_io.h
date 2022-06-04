@@ -65,28 +65,56 @@ char* recopilar(char* texto){
 }
 */
 
+/*
+prueba para concatenar caracteres
+usando solo la funcion strlen de string.h
+*/
+
+char* concatenar(char* a, char* b){
+    int l1 = strlen(a);
+    int l2 = strlen(b);
+    char* res = calloc((10000), sizeof(char)); 
+    int i;
+    for(i = 0; i<l1; i++){
+        res[i]=a[i];
+    }
+    res[i]=' ';
+    int x=0;
+    for(i=i+1;i<(l1+l2+1); i++){
+        res[i]=b[x];
+        x++;
+    }
+
+    return res;
+}
+
 void save_aux2(node* n, char* f){
+	char *buffer = calloc(MAX, sizeof(char));
 	FILE *archivo;
- 	archivo = fopen(f,"r+");
-	fprintf(archivo, "***************************\n");
-	fprintf(archivo, "Palabra: %s \n", n->word);
-	fprintf(archivo, "Lista de coincidencias: \n");
-    linkedList* L = n->books;
-	nodo* actual = L->inicio;
-	int i=1;
-	while(actual!=NULL){
-		fprintf(archivo, "\t%d. %s\n", i, actual->texto);
-		actual=actual->sig;
-		i++;
+ 	archivo = fopen(f,"r+"); //lectura/escritura
+	while(feof(archivo)==0){
+		fgets(buffer, MAX, archivo); //en teoria no hace nada, pero mueve el puntero al final del archivo
 	}
+	fprintf(archivo, "%s\n", n->word);
+	linkedList* L = n->books;
+	nodo* actual = L->inicio;
+	while(actual!=NULL){
+		fprintf(archivo, "\t%s\n", actual->texto);
+		actual=actual->sig;
+	}
+	
 	fclose(archivo);
 }
 
-void save_aux(splay_tree *t, node *n, char* f) {
+int save_aux(splay_tree *t, node *n, char* f) {
 	if(n != NULL) {
 	  save_aux(t, n->left,f);
 	  save_aux2(n, f);
 	  save_aux(t, n->right, f);
+	  return 0;
+	}
+	else{
+		return -1;
 	}
 }
 
@@ -102,8 +130,20 @@ void saveTree(splay_tree* s){
     }
  	else{
  		fclose(archivo);
- 		save_aux(s, s->root, nombre);
- 	    printf("archivo guardado exitosamente");
+ 		int x=save_aux(s, s->root, nombre);
+		if(x!=0){
+			printf("\nno se guardo el archivo\n");
+			return;
+		} 
+		FILE *arch;
+		arch=fopen(nombre, "r+");
+		char*buffer=calloc(10000, sizeof(char));
+		while(feof(archivo)==0){
+			fgets(buffer, 10000, archivo); 
+		}
+		fprintf(arch, "[%s]\n", s->root->word);
+		fclose(arch);
+ 	    printf("\narchivo guardado exitosamente\n");
 		return;
 	}
 }

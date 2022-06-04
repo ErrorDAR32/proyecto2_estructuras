@@ -21,30 +21,27 @@ int main() {
 	insert(t, "zorro");
 
 	node *x=search(t, "arroz");	
-	printf("\n***************\n");
 	node *y=search(t, "holi");
 	insertar(x->books, "don quijote"); //la funcion insertar es de la lista integrada al splay tree
 	insertar(y->books, "mein kampf");  //node->books es una lista dinamica de enlace simple
 	insertar(x->books, "metamorfosis"); //
-
-	imprimir(t);
     
 	splay(t,search(t,"esternocleidomastoideo"));
-	printf("xxxxxxxxxxxxxxxxxx\n");
-	printf("[%s]", t->root->word);
-	printf("xxxxxxxxxxxxxxxxxx\n");
-	printf("\n");
-	eliminar(t, "zorro");
 	
-	printf("\n\n[%s]\n", t->root->word);
 	eliminar(t, "xochimilco");
-	
-	printf("\n\n[%s]\n", t->root->word);
-	imprimir(t);
-	//printf("\nguardando...\n");
-	//save_aux(t, t->root, "fichero.txt");
-	/*node* act = search(t, i, 70);
-	printf("[%d]", t->root->data);
-	inorder(t, t->root);*/
+
+	printf("\nguardando...\n");
+	saveTree(t);
+	char* buffer = calloc(1000, sizeof(char));
+	char* res=calloc(1000, sizeof(char));
+	FILE *archivo;
+	archivo = fopen("fichero.txt","r+");
+	while(feof(archivo)==0){
+		fgets(buffer, 1000, archivo);
+		res=concatenar(res, buffer);
+	}
+	printf("%s", res);
+	fclose(archivo);
+
 	return 0;
 }
