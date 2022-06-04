@@ -53,7 +53,8 @@ int readfiles(char * ruta, struct HashMap h){
 		}
 
 		//printf("%s \n", ent->d_name);
-		char full_filename[1024] = "./arch/";
+		char full_filename[1024];
+    strcpy(full_filename, ruta);
 		strcat(full_filename, ent->d_name);
 		char *string = ReadFile(full_filename);
 		
@@ -69,18 +70,18 @@ int readfiles(char * ruta, struct HashMap h){
 }
 
 
-int main()
-{
-  
-	struct HashMap h = HMnewHashMap(8);
-	readfiles("./arch", h);
-   
-    printf("lul");
-    
-    printHashMap(&h);
-
-   
-  return EXIT_SUCCESS;
-}
+//int main()
+//{
+//  
+//	struct HashMap h = HMnewHashMap(8);
+//	readfiles("./arch", h);
+//   
+//    printf("lul");
+//    
+//    printHashMap(&h);
+//
+//   
+//  return EXIT_SUCCESS;
+//}
 
 

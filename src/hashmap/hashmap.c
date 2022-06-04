@@ -3,9 +3,11 @@
 //doubles in capacity when load factor is reached
 // data is wrapped in "HashMapNode"s, these nodes also contain 
 //information for the workings of the hashmap
-
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifndef HASHMAP_H
+#define HASHMAP_H
 
 //Nodo de la tabla de hash
 struct HashMapNode {
@@ -233,3 +235,5 @@ int testHM() {
 //    testHM();
 //   return 0;
 //}
+
+#endif
