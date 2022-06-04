@@ -128,10 +128,8 @@ int HMinsertNode(struct HashMap *hmap, struct HashMapNode *newhn) {
             return -1;
         }
         if (hn->key == NULL) {
-            printf("inserting key %s at %lu, %p\n", newhn->key, pos, newhn);
             *hn = *newhn;
             hmap->elements++;
-            printHashMap(hmap);
             return 0;
         }
 

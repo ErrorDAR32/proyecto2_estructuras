@@ -1,16 +1,19 @@
 #include "../hashmap/hashmap.c"
 
-char** search(struct HashMap h, char* substring){
+char** search(struct HashMap *h, char* substring){
     if(strlen(substring) == 0){
         return NULL;
     }
 
-    char** result = malloc(sizeof(char*)*h.elements);
+    char** result = malloc(sizeof(char*)*h->elements);
     int counter = 0;
     
-    for(int i = 0; i < h.capacity; i++){
-        if(search_string(h.Buckets[i].value, substring) == 1){
-            result[counter] = h.Buckets[i].value;
+    for(int i = 0; i < h->capacity; i++){
+        if(h->Buckets[i].key == NULL){
+            continue;
+        }
+        if(search_string(h->Buckets[i].value, substring) == 1){
+            result[counter] = h->Buckets[i].key;
             counter++;
         }
     }
@@ -32,6 +35,7 @@ int search_string(char* string, char* substring){
         if(string[i] == substring[0]){
 
             for(int j = 0; j < strlen(substring); j++){
+                printf("%c, %c\n", string[i+j], substring[j]);
                 if(string[i+j] != substring[j]){
                     return 0;
                 }

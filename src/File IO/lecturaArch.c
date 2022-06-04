@@ -40,7 +40,7 @@ char* ReadFile(char *filename)
 }
 
 
-int readfiles(char * ruta, struct HashMap h){
+int readfiles(char * ruta, struct HashMap *h){
 	
 	DIR *dir = opendir(ruta);
 	if (dir == NULL){
@@ -58,7 +58,7 @@ int readfiles(char * ruta, struct HashMap h){
 		strcat(full_filename, ent->d_name);
 		char *string = ReadFile(full_filename);
 		
-		printf("%i\n", HMinsertKeyValue(&h, ent->d_name, string));
+		printf("%i\n", HMinsertKeyValue(h, ent->d_name, string));
 		
 		
   }
