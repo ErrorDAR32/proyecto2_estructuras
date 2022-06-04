@@ -106,7 +106,6 @@ int HMresize(struct HashMap *hmap) {
 
     free(hmap->Buckets);
     *hmap = newhmap;
-    
     return 0;
 }
 
@@ -127,14 +126,17 @@ int HMinsertNode(struct HashMap *hmap, struct HashMapNode *newhn) {
             return -1;
         }
         if (hn->key == NULL) {
+            printf("inserting key %s at %lu, %p\n", newhn->key, pos, newhn);
             *hn = *newhn;
             hmap->elements++;
+            printHashMap(hmap);
             return 0;
         }
 
-        pos = pos+1 % hmap->capacity;
+        pos = (pos+1) % hmap->capacity;
         hn = &hmap->Buckets[pos];
     }
+    
     return -1;
 } 
 
@@ -227,7 +229,7 @@ int testHM() {
     return 0;
 }
 
-int main() {
-    testHM();
-    return 0;
-}
+//int main() {
+//    testHM();
+//   return 0;
+//}

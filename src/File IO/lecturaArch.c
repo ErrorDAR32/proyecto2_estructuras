@@ -57,8 +57,8 @@ int lector(char * ruta, struct HashMap h){
 		strcat(full_filename, ent->d_name);
 		char *string = ReadFile(full_filename);
 		
-		//printf("%s \n..............................................\n", string);
-		HMinsertKeyValue(&h, ent->d_name, string);
+		printf("%i\n", HMinsertKeyValue(&h, ent->d_name, string));
+		
 		
   }
 
@@ -72,10 +72,10 @@ int lector(char * ruta, struct HashMap h){
 int main()
 {
   
-	struct HashMap h = HMnewHashMap(1);
+	struct HashMap h = HMnewHashMap(8);
 	lector("./arch", h);
    
-  
+    printf("lul");
     
     printHashMap(&h);
 
