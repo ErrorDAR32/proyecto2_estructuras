@@ -40,7 +40,7 @@ char* ReadFile(char *filename)
 }
 
 
-int lector(char * ruta, struct HashMap h){
+int readfiles(char * ruta, struct HashMap h){
 	
 	DIR *dir = opendir(ruta);
 	if (dir == NULL){
@@ -73,7 +73,7 @@ int main()
 {
   
 	struct HashMap h = HMnewHashMap(8);
-	lector("./arch", h);
+	readfiles("./arch", h);
    
     printf("lul");
     
